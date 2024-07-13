@@ -1,0 +1,2 @@
+assistantName = "Max"
+ownerName = "Muhaimin"
