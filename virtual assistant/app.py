@@ -1,64 +1,8 @@
-import speech_recognition as sr
-import pyttsx3 as tts
+from speech import setup, speak, listen
 from names import assistantName, ownerName
 from browser import youtubeSearch, webSearch, composeEmail
-from gemini import commandToPrompt, getEmail
-
-engine = None
-r = None
-
-#Initial setup settings
-def setup():
-    global engine, r
-    #Initializing speech engine and recognizer
-    engine = tts.init()
-    r = sr.Recognizer()
-    #Speech settings
-    engine.setProperty('voice' , engine.getProperty('voices')[1].id) #Setup female voice for the assistant
-    engine.setProperty('rate', 150) #Setup the speech rate of the assistant
-
-#Function for speaking content
-def speak(content):
-    if("play" in content):
-        engine.say("Playing " + content[4:])
-    elif("search" in content):
-        engine.say("Searching " + content[5:])
-    elif("write" in content):
-        engine.say("Writing " + content[5:])
-    elif("send" in content):
-        engine.say("Sending " + content[4:])
-    else:
-        engine.say(content)
-    engine.runAndWait()
-
-#Function for listening to command
-def listen():
-    with sr.Microphone() as source:
-        try:
-            # Adjust for ambient noise
-            print("Calibrating microphone...")
-            r.adjust_for_ambient_noise(source, duration=0.5)
-
-            # Listen for the user's input
-            print("Listening")
-            speak("Listening")
-            command = r.listen(source)
-            
-            # Using Google to recognize audio
-            commandText = r.recognize_google(command).lower()
-            print(commandText)
-            
-        except sr.RequestError as e:
-            print(f"Could not request results; {e}")
-            speak("There's some kinda request error, maybe bad internet or something.")
-            return ""
-        
-        except sr.UnknownValueError:
-            print("Unknown error occurred or could not understand the audio")
-            speak("There's some unknown error or maybe audio could not be understood")
-            return ""
-        
-    return commandText
+from gemini import commandToPrompt, getEmail, getExplanation
+from softwares import open
 
 #This function is converting the command into prompt using NLP
 def handleCommand(command):
@@ -69,20 +13,31 @@ def handleCommand(command):
         prompt = commandToPrompt(command)
         webSearch(prompt)
     elif ("email" in command or "gmail" in command or "mail" in command):
-        # speak("Please enter the name of the recipient:")
-        # name = listen()
-        # print(name)
-        # speak("Please tell me the email of the recipient:")
-        # email = listen()
-        # print(email)
-        # speak("Why do you need to write this email?")
-        # body = listen()
-        # print(body)
-        name = "Salman Khan"
-        email = "salman.khan@gmail.com"
-        reason = "write an email to invite to invite to birthday party next month"
+        speak("Please enter the name of the recipient:")
+        name = listen()
+        print(name)
+        speak("Please tell me the email of the recipient:")
+        email = listen()
+        print(email)
+        speak("Why do you need to write this email?")
+        reason = listen()
+        print(reason)
+        # name = "Salman Khan"
+        # email = "salman.khan@gmail.com"
+        # reason = "write an email to ask about his plans this summer"
         urlEncodedMail = getEmail(name, email, reason)
         composeEmail(urlEncodedMail)
+    elif ("open" in command):
+        open(command[5:])
+    elif any(keyword in command for keyword in ["explain", "what", "why", "where", "who", "when", "how"]):
+        response = getExplanation(command)
+        print(response)
+        speak(response)
+        while("It was a pleasure to help you!" not in response):
+            userResponse = listen()
+            response = getExplanation(userResponse)
+            print(response)
+            speak(response)
 
 def main():
     setup()

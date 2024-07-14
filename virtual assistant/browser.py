@@ -1,4 +1,6 @@
 from selenium import webdriver
+import pyautogui as pointer
+from softwares import open
 import psutil
 
 currentWindowIndex = 0
@@ -44,8 +46,12 @@ def webSearch(prompt):
     driver.get(f"https://www.google.com/search?q={SEARCH_QUERY}")
 
 def composeEmail(urlEncodedMail):
-    configBrowser()
-    driver.get(urlEncodedMail)
+    open("firefox")
+    pointer.hotkey('ctrl', 't')
+    pointer.typewrite(urlEncodedMail)
+    pointer.press('enter')
+
+youtubeSearch("kid laroi girls")
 
 
 

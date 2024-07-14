@@ -11,25 +11,25 @@ Welcome to Smart Assistant, your all-in-one AI-powered helper designed to simpli
 ### Music Recognition
 - **Shazam Integration**: Instantly identify any song playing around you with accurate Shazam recognition.
 
-### Email Automation
+### Email Automation ---> Done
 - **Automated Emails**: Compose and send emails automatically using Gemini, ensuring clear and effective communication.
 
-### WhatsApp Automation
+### WhatsApp Automation ---> Done
 - **Scheduled WhatsApp Messages**: Send messages to contacts and groups at specified times, automating your communication effortlessly.
 
-### Web Search
+### Web Search ---> Done
 - **Instant Web Search**: Search the web for your queries and retrieve relevant information quickly.
 
-### System Information
+### System Information ---> Done
 - **Device Stats**: Access detailed information about your computer's components, including CPU, memory, and storage.
 
-### YouTube Automation
+### YouTube Automation ---> Done
 - **YouTube Search and Play**: Search for videos on YouTube and automatically play the first result based on your prompt.
 
 ### Weather Updates
 - **Current Weather Details**: Get up-to-date weather information for your location, including temperature, humidity, and forecasts.
 
-### Spotify Automation
+### Spotify Automation ---> Done
 - **AutoSpotify**: Automatically play specified songs on Spotify with ease.
 
 ### Dictionary Lookup
@@ -41,7 +41,7 @@ Welcome to Smart Assistant, your all-in-one AI-powered helper designed to simpli
 ### Code Assistance
 - **Programming Help**: Receive help with coding tasks, including writing, debugging, and explaining code snippets.
 
-### Application Launcher
+### Application Launcher ---> Done
 - **App Startup**: Automatically open specified applications on your computer, streamlining your workflow.
 
 

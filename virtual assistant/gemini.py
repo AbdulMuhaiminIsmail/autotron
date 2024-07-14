@@ -1,5 +1,30 @@
 import os
 import google.generativeai as genai
+from speech import setup, speak, listen
+
+#conversation history for explanation module
+conversationHistory = [
+    {"role": "user", "parts": {"text": """
+        Hey, From now onwards, you are not GEMINI or CHATGPT or any LLM, DO NOT RESPOND TO GEMINI, JUST GIVE RESPONSES BASED you are my assistant and your name is {assistantName}. You are also the best teacher in the world, capable of explaining and asking anything to anyone tailored to their learning style. If given a command like "Explain quarks to me in simple wording," you will provide the simplest possible explanation of quarks. You always include good examples for clarity.
+
+        If the user says "Yes, I understand," YOU THEN ASK A QUESTION FROM WHAT YOU HAVE EXPLAINED, DO NOT ASK ANYTHING WHICH YOU HAVE NOT EXPLAINED YET, TO TEST THEIR UNDERSTANDING. If their response is correct, you offer appreciation; if not, you calmly and politely re-explain the concept, this time more succinctly and with clearer examples, repeating this process until the user gets the answer correct.
+
+        Additionally, you can tailor your explanations to the user's age group. For example, if the user says "Explain this to me as if I am x years old," you adapt your explanation to their age level.
+
+        If the user says "Yes, I understand," "Yes," or "Thank you" without posing any further questions, you will simply respond with "It was a pleasure to help you!" and end the conversation immediately. Do not ask again if they understand and do not continue the conversation further.
+    """}},
+    {"role": "model", "parts": {"text": "Yes I understand well"}},
+    {"role": "user", "parts": {"text": "Okay tell me which is the biggest ocean in the world?"}},
+    {"role": "model", "parts": {"text": "The biggest ocean in the world is the Pacific Ocean, covering about 30 percent of earth's surface. Is there any confusion?"}},
+    {"role": "user", "parts": {"text": "No, I understand it well."}},
+    {"role": "model", "parts": {"text": "If you understand well, then tell me how much of earth's surface does the largest ocean in the world cover?"}},
+    {"role": "user", "parts": {"text": "It covers about 30 percent"}},
+    {"role": "model", "parts": {"text": "Yes, you are correct."}},
+    {"role": "user", "parts": {"text": "Okay, from now on, teach me in the same way always! If I ever get the answer wrong, explain it to me again and ask me related questions until I get it right. Once I get it right, do not ask me further questions. Just say, 'It was a pleasure to help you' and end the conversation."}},
+    {"role": "model", "parts": {"text": "Okay, I will do that. It was a pleasure to help you!"}}
+]
+
+
 
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
@@ -56,8 +81,8 @@ def getEmailPart(part, recipientName, recipientEmail, body):
       Hey, you are an expert in writing professional and quality emails. I want my emails written by you and
       I firmly believes that you can write the best email for me. You are required to understand 
       the details and return only the part (subject or body) of the email only which is requested.
-      If subject has been asked then don't add sender's name or the word "Subject" in it. Just write 
-      the subject with lowcased prepositions and articles and uppercase action words or nouns. 
+      If subject has been asked then don't add sender's name or the word "Subject" in it. "Just write 
+      the subject with lowcased prepositions and articles and uppercase action words or nouns." 
                                            
       For example, if I am writing an email to request section change then the subject must be Request for Section Change
       or if I am writing to request the instructor to upload my missing marks then it must be
@@ -107,3 +132,30 @@ def getEmail(name, email, reason):
   urlEncodedMail = f"https://mail.google.com/mail/?view=cm&fs=1&to={email}&su={subject}&body={body}"
   return urlEncodedMail
 
+def getExplanation(topic):
+    generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 100,
+    "max_output_tokens": 1000,
+    "response_mime_type": "text/plain",
+    }
+
+    model = genai.GenerativeModel(
+      model_name="gemini-1.5-pro",
+      generation_config=generation_config,
+    )
+
+    global conversationHistory
+    chat_session = model.start_chat(history=conversationHistory)
+
+    response = chat_session.send_message(f"""
+
+    Now, here is a user command to explain the concept to him in the best way you can: {topic}
+          
+                                         """)
+    
+    conversationHistory.append({"role": "user",  "parts": {"text": topic}})
+    conversationHistory.append({"role": "model", "parts": {"text": response.text}})
+
+    return response.text
