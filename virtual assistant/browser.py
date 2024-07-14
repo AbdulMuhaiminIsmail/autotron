@@ -43,6 +43,10 @@ def webSearch(prompt):
     SEARCH_QUERY = promptToQuery(prompt)
     driver.get(f"https://www.google.com/search?q={SEARCH_QUERY}")
 
+def composeEmail(urlEncodedMail):
+    configBrowser()
+    driver.get(urlEncodedMail)
+
 
 
 

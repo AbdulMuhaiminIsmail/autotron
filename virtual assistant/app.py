@@ -1,8 +1,8 @@
 import speech_recognition as sr
 import pyttsx3 as tts
 from names import assistantName, ownerName
-from browser import youtubeSearch, webSearch
-from nlp import getResponse
+from browser import youtubeSearch, webSearch, composeEmail
+from gemini import commandToPrompt, getEmail
 
 engine = None
 r = None
@@ -63,11 +63,26 @@ def listen():
 #This function is converting the command into prompt using NLP
 def handleCommand(command):
     if ("search" in command or "play" in command) and ("youtube" in command or "watch" in command):
-        prompt = getResponse(command)
+        prompt = commandToPrompt(command)
         youtubeSearch(prompt)
     elif ("search" in command or "look for" in command or "find" in command) and ("web" in command or "google" in command or "firefox" in command or "browser" in command):
-        prompt = getResponse(command)
+        prompt = commandToPrompt(command)
         webSearch(prompt)
+    elif ("email" in command or "gmail" in command or "mail" in command):
+        # speak("Please enter the name of the recipient:")
+        # name = listen()
+        # print(name)
+        # speak("Please tell me the email of the recipient:")
+        # email = listen()
+        # print(email)
+        # speak("Why do you need to write this email?")
+        # body = listen()
+        # print(body)
+        name = "Salman Khan"
+        email = "salman.khan@gmail.com"
+        reason = "write an email to invite to invite to birthday party next month"
+        urlEncodedMail = getEmail(name, email, reason)
+        composeEmail(urlEncodedMail)
 
 def main():
     setup()
