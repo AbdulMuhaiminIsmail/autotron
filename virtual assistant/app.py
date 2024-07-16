@@ -1,58 +1,64 @@
-from speech import setup, speak, listen
-from names import assistantName, ownerName
-from browser import youtubeSearch, webSearch, composeEmail
-from gemini import commandToPrompt, getEmail, getExplanation
-from softwares import open
+from helper import assistantName, ownerName
+from speech import SpeechSystem
+from browser import Browser
+from gemini import Gemini
+from software import Software, Spotify, Whatsapp
+from system import System
 
-#This function is converting the command into prompt using NLP
-def handleCommand(command):
-    if ("search" in command or "play" in command) and ("youtube" in command or "watch" in command):
-        prompt = commandToPrompt(command)
-        youtubeSearch(prompt)
-    elif ("search" in command or "look for" in command or "find" in command) and ("web" in command or "google" in command or "firefox" in command or "browser" in command):
-        prompt = commandToPrompt(command)
-        webSearch(prompt)
-    elif ("email" in command or "gmail" in command or "mail" in command):
-        speak("Please enter the name of the recipient:")
-        name = listen()
-        print(name)
-        speak("Please tell me the email of the recipient:")
-        email = listen()
-        print(email)
-        speak("Why do you need to write this email?")
-        reason = listen()
-        print(reason)
-        # name = "Salman Khan"
-        # email = "salman.khan@gmail.com"
-        # reason = "write an email to ask about his plans this summer"
-        urlEncodedMail = getEmail(name, email, reason)
-        composeEmail(urlEncodedMail)
-    elif ("open" in command):
-        open(command[5:])
-    elif any(keyword in command for keyword in ["explain", "what", "why", "where", "who", "when", "how"]):
-        response = getExplanation(command)
-        print(response)
-        speak(response)
-        while("It was a pleasure to help you!" not in response):
-            userResponse = listen()
-            response = getExplanation(userResponse)
-            print(response)
-            speak(response)
+class App:
+    def __init__(self):
+        self.command = ""
+        self.ss = SpeechSystem()
 
-def main():
-    setup()
-    command = ""
-    while(True):
-        command = listen()
-        if(command == "00"):
-            speak(f"Ok, have a great day")
-            break
-        speak(command)
-        handleCommand(command)
-        speak(f"Is there anything else I can help you with {ownerName}?")
+    def handleCommand(self, command):
+        if ("youtube" in command) and any(keyword in command for keyword in ["watch", "play", "search"]): 
+            prompt = Gemini().command_to_prompt(command)
+            Browser().youtube_search(prompt)
+        
+        elif any(keyword in command for keyword in ["search", "look for", "look up", "find", "search for"]) and any(keyword in command for keyword in ["web", "google", "firefox", "browser"]):
+            prompt = Gemini().command_to_prompt(command)
+            Browser().web_search(prompt)
+        
+        elif any(keyword in command for keyword in ["email", "gmail", "mail"]):
+            urlEncodedMail = Gemini().get_email()
+            Browser().compose_email(urlEncodedMail)
+        
+        elif ("play" in command) and any(keyword in command for keyword in ["song", "music", "spotify", "songs", "tunes", "pop", "rock", "lo-fi", "remix"]):
+            prompt = Gemini().command_to_prompt(command)
+            Spotify().play(prompt)
+        
+        elif "open" in command:
+            software = Software(command[5:].strip())  # Adjusted to trim whitespace and remove "open"
+            software.open()
 
+        elif any(keyword in command for keyword in ["explain", "what", "why", "where", "who", "when", "how"]):
+            Gemini().get_explanation(command)
+
+        elif any(keyword in command for keyword in ["system info", "pc information", "pc stats", "system stats", "system details", "system information"]):
+            System().stats()
+
+        elif any(keyword in command for keyword in ["text", "txt", "message", "msg"]):
+            Whatsapp().text()
+
+        elif any(keyword in command for keyword in ["call", "audio call"]):
+            Whatsapp().call()
+        else:
+            self.ss.speak("Sorry, I do not recognize this command")
+
+    def start(self):
+        self.ss.speak(f"Hey, I am {assistantName}, your personal voice assistant! How may I help you today, {ownerName}?")
+        
+        while True:
+            command = self.ss.listen()
+
+            if command == "00":
+                self.ss.speak("Ok, have a great day! GoodBye")
+                break
+            
+            self.handleCommand(command)
+            self.ss.speak(f"Is there anything else I can help you with, {ownerName}?")
 
 if __name__ == "__main__":
-    main()
+    App().start()
 
 

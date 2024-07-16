@@ -1,2 +1,0 @@
-assistantName = "Max"
-ownerName = "Muhaimin"

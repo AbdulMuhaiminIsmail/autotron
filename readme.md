@@ -5,7 +5,7 @@ Welcome to Smart Assistant, your all-in-one AI-powered helper designed to simpli
 
 ## Features
 
-### Intelligent Explanations
+### Intelligent Explanations ---> Done
 - **Gemini Responses**: Get detailed explanations and answers to your questions using the powerful Gemini model.
 
 ### Music Recognition
@@ -43,5 +43,9 @@ Welcome to Smart Assistant, your all-in-one AI-powered helper designed to simpli
 
 ### Application Launcher ---> Done
 - **App Startup**: Automatically open specified applications on your computer, streamlining your workflow.
+
+### Automatic Meeting Setup
+- **Google Meet**: Automatically sets up a Google Meet meeting and sends the generated link to the
+said contact on Whatsapp
 
 

@@ -1,62 +1,60 @@
-from selenium import webdriver
 import pyautogui as pointer
-from softwares import open
 import psutil
+from selenium import webdriver
+from software import Software
+from speech import SpeechSystem
 
-currentWindowIndex = 0
-driver = None
-
-def promptToQuery(prompt):
-    return '+'.join(prompt.lower().split())
-
-def is_browser_running(browser_name):
-    # List all processes
-    processes = [p.info for p in psutil.process_iter(attrs=['pid', 'name'])]
-
-    # Check if any process is a browser instance
-    for process in processes:
-        if browser_name in process['name'].lower():
-            return True
-    return False
-
-def configBrowser():
-    global driver, currentWindowIndex
-    if is_browser_running("firefox") and driver != None:
-        driver.execute_script("window.open('about:blank', '_blank');")
-        # Get handles of all open tabs
-        handles = driver.window_handles
-        # Switch to the new tab
-        currentWindowIndex = currentWindowIndex - 1
-        driver.switch_to.window(handles[currentWindowIndex])
-    else:
-        # Initialize Firefox WebDriver
-        driver = webdriver.Firefox()
-        # Maximize window
-        driver.maximize_window()
+class Browser:
+    def __init__(self, name="firefox"):
+        self.name = name
+        self.current_window_index = 0
+        self.driver = None
+        self.ss = SpeechSystem()
+    
+    def config_browser(self):
+        if self.is_browser_running("firefox") and self.driver is not None:
+            self.driver.execute_script("window.open('about:blank', '_blank');")
+            # Get handles of all open tabs
+            handles = self.driver.window_handles
+            # Switch to the new tab
+            self.current_window_index = len(handles) - 1
+            self.driver.switch_to.window(handles[self.current_window_index])
+        else:
+            # Initialize Firefox WebDriver
+            self.driver = webdriver.Firefox()
+            # Maximize window
+            self.driver.maximize_window()
         
-def youtubeSearch(prompt):
-    configBrowser()
-    SEARCH_QUERY = promptToQuery(prompt)
-    driver.get(f"https://www.youtube.com/results?search_query={SEARCH_QUERY}")
+    def youtube_search(self, prompt):
+        self.ss.speak("OK! Let's watch " + prompt + " on Youtube")
+        self.config_browser()
+        search_query = self.prompt_to_query(prompt)
+        self.driver.get(f"https://www.youtube.com/results?search_query={search_query}")
 
+    def web_search(self, prompt):
+        self.ss.speak("Surely! Let's search " + prompt + " on the web")
+        self.config_browser()
+        search_query = self.prompt_to_query(prompt)
+        self.driver.get(f"https://www.google.com/search?q={search_query}")
 
-def webSearch(prompt):
-    configBrowser()
-    SEARCH_QUERY = promptToQuery(prompt)
-    driver.get(f"https://www.google.com/search?q={SEARCH_QUERY}")
+    def compose_email(self, url_encoded_mail):
+        self.ss.speak("Hold tight, your E-mail is almost ready!")
+        firefox = Software("firefox")
+        firefox.open()
+        pointer.hotkey('ctrl', 't')
+        pointer.typewrite(url_encoded_mail)
+        pointer.press('enter')
 
-def composeEmail(urlEncodedMail):
-    open("firefox")
-    pointer.hotkey('ctrl', 't')
-    pointer.typewrite(urlEncodedMail)
-    pointer.press('enter')
-
-youtubeSearch("kid laroi girls")
-
-
-
-
-
-
-
-
+    @staticmethod
+    def prompt_to_query(prompt):
+        return '+'.join(prompt.lower().split())
+    
+    @staticmethod
+    def is_browser_running(browser_name):
+        # List all processes
+        processes = [p.info for p in psutil.process_iter(attrs=['pid', 'name'])]
+        # Check if any process is a browser instance
+        for process in processes:
+            if browser_name in process['name'].lower():
+                return True
+        return False
