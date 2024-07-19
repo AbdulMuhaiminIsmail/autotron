@@ -10,11 +10,10 @@ class Browser:
         self.current_window_index = 0
         self.driver = None
         self.ss = SpeechSystem()
-    
     def config_browser(self):
-        if self.is_browser_running("firefox") and self.driver is not None:
+        if self.is_browser_running(self.name) and self.driver != None:
             self.driver.execute_script("window.open('about:blank', '_blank');")
-            # Get handles of all open tabs
+            # Fetch all the handles 
             handles = self.driver.window_handles
             # Switch to the new tab
             self.current_window_index = len(handles) - 1
@@ -26,16 +25,18 @@ class Browser:
             self.driver.maximize_window()
         
     def youtube_search(self, prompt):
-        self.ss.speak("OK! Let's watch " + prompt + " on Youtube")
         self.config_browser()
         search_query = self.prompt_to_query(prompt)
         self.driver.get(f"https://www.youtube.com/results?search_query={search_query}")
 
     def web_search(self, prompt):
-        self.ss.speak("Surely! Let's search " + prompt + " on the web")
         self.config_browser()
         search_query = self.prompt_to_query(prompt)
         self.driver.get(f"https://www.google.com/search?q={search_query}")
+
+    def visit_site(self, url):
+        self.config_browser()
+        self.driver.get(url)
 
     def compose_email(self, url_encoded_mail):
         self.ss.speak("Hold tight, your E-mail is almost ready!")

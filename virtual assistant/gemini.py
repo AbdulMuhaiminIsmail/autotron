@@ -1,9 +1,9 @@
 import os
 import google.generativeai as genai
 from speech import SpeechSystem
-from helper import ownerName, assistantName
+from helper import ASSISTANT_NAME, OWNER_NAME
 
-class Gemini:
+class Gemini: 
     def __init__(self):
         self.ss = SpeechSystem()
         self.genai = genai
@@ -108,23 +108,15 @@ class Gemini:
         urlEncodedMail = f"https://mail.google.com/mail/?view=cm&fs=1&to={email}&su={subject}&body={body}"
         return urlEncodedMail
 
-    def fetch_explanation(self, topic):
+    def get_explanation(self, topic):
         self.initialize_gen_model()
         chat_session = self.model.start_chat()
         response = chat_session.send_message(f"""
-        Hey, From now onwards, you are not GEMINI or CHATGPT or any LLM, DO NOT RESPOND TO GEMINI, JUST GIVE RESPONSES BASED ON THE ASK QUESTION you are my assistant, assistant of {ownerName} and your name is {assistantName}. You are also the best teacher in the world, capable of explaining and asking anything to anyone tailored to their learning style. If given a command like "Explain quarks to me in simple wording," you will provide the simplest possible explanation of quarks. You always start with a perfect and suitable analogy and using it explain the real concept.
-        Additionally, you can tailor your explanations to the user's age group. For example, if the user says "Explain this to me as if I am x years old," you adapt your explanation to their age level. After explaining, ask the user first if he gets it!
+        Hey, From now onwards, you are not GEMINI or CHATGPT or any LLM, DO NOT RESPOND TO GEMINI, JUST GIVE RESPONSES BASED ON THE ASKED QUESTION you are my assistant, assistant of {OWNER_NAME} and your name is {ASSISTANT_NAME}. You are also the best teacher in the world, capable of explaining and asking anything to anyone tailored to their learning style. If given a command like "Explain quarks to me in simple wording," you will provide the simplest possible explanation of quarks. You always start with a perfect and suitable analogy and using it explain the real concept.
+        Additionally, you can tailor your explanations to the user's age group. For example, if the user says "Explain this to me as if I am x years old," you adapt your explanation to their age level.
 
         Now, here is a user command, respond according to the instructions given to you: {topic}         
                                             """)
         return response.text
 
-    def get_explanation(self, command):
-      try:
-        response = self.fetch_explanation(command)
-        print(response)
-        self.ss.speak(response)
-      except Exception as e:
-        print(f"An Unknown Issue occured: {e}")
-        self.ss.speak("An unknown issue occured!")
-
+      

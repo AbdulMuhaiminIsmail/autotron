@@ -12,15 +12,6 @@ class SpeechSystem:
 
     #Function for speaking content
     def speak(self, content):
-        # if("play" in content):
-        #     self.engine.say("Playing " + content[4:])
-        # elif("search" in content):
-        #     self.engine.say("Searching " + content[5:])
-        # elif("write" in content):
-        #     self.engine.say("Writing " + content[5:])
-        # elif("send" in content):
-        #     self.engine.say("Sending " + content[4:])
-        # else:
         self.engine.say(content)
         self.engine.runAndWait()
 
@@ -38,8 +29,7 @@ class SpeechSystem:
                 command = self.recognizer.listen(source)
                 
                 # Using Google to recognize audio
-                commandText = self.recognizer.recognize_google(command).lower()
-                print(commandText)
+                commandText = self.recognizer.recognize_google(command)
                 
             except sr.RequestError as e:
                 print(f"Could not request results; {e}")

@@ -8,7 +8,6 @@ class Software:
         self.ss = SpeechSystem()
 
     def open(self):
-        self.ss.speak("Opening " + self.name)
         if self.name != "firefox":
             pointer.moveTo(190, 1079)
             time.sleep(1)
@@ -26,7 +25,6 @@ class Spotify(Software):
         super().__init__("spotify")    
 
     def play(self, songName):
-        self.ss.speak("Playing " + songName + " on Spotify")
         super().open()
         time.sleep(6)
         pointer.hotkey('ctrl', 'l')
@@ -39,12 +37,7 @@ class Whatsapp(Software):
     def __init__(self):
         super().__init__("whatsapp")
 
-    def text(self):
-        self.ss.speak("What's the message?")
-        message = self.ss.listen()
-        self.ss.speak("Target contact?")
-        contact_name = self.ss.listen()
-        self.ss.speak("Sending a text to " + contact_name + " on WhatsApp")
+    def text(self, contact_name, message):
         super().open()
         time.sleep(1)
         pointer.hotkey('ctrl', 'f')
@@ -55,10 +48,7 @@ class Whatsapp(Software):
         pointer.typewrite(message)
         pointer.press('enter')
 
-    def call(self):
-        self.ss.speak("Whom to call?")
-        contact_name = self.ss.listen()
-        self.ss.speak("Calling " + contact_name + " on WhatsApp")
+    def call(self, contact_name):
         super().open()
         time.sleep(1)
         pointer.hotkey('ctrl', 'f')
